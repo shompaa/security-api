@@ -6,7 +6,9 @@
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon index"
+    "dev": "nodemon index",
+    "start": "node index",
+    "build": "babel src -d dist --copy-files"
   },
   "author": "",
   "license": "ISC",
