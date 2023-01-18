@@ -8,7 +8,6 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon index",
     "start": "node index",
-    "build": "babel src -d dist --copy-files"
   },
   "author": "",
   "license": "ISC",
