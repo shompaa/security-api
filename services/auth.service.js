@@ -1,4 +1,5 @@
 import bcrypt from "bcrypt";
+import createError from "http-errors";
 import { generateToken } from "../utils/index.js";
 import { findUserByEmail } from "./index.service.js";
 
@@ -7,11 +8,12 @@ export const loginService = async (params) => {
     const { email, password } = params;
     const user = await findUserByEmail(email);
     if (!user) {
-      throw new Error("User not found");
+      throw new createError(404, "User not found");
     }
     const validPassword = bcrypt.compareSync(password, user.password);
+    
     if (!validPassword) {
-      throw new Error("Invalid email or password");
+      throw new createError(400, "Invalid email or password");
     }
     const {
       password: _,

@@ -1,9 +1,6 @@
 import { Car } from "../models/index.model.js";
 import { findAddressById, updateAddress } from "./address.service.js";
-import Errors from 'http-errors';
-import { findUserById } from "./user.service.js";
-
-const { CreateHttpError } = Errors;
+import createError from "http-errors";
 
 export const findCarById = async (id) => {
   try {
@@ -11,7 +8,7 @@ export const findCarById = async (id) => {
       .populate("owner", "name lastName")
       .populate("address", "street number district");
     if (!car) {
-      throw new Error("Car not found");
+      throw new createError(404, "Car not found");
     }
     return car;
   } catch (error) {
@@ -23,12 +20,12 @@ export const findCarByPatent = async (patent, user) => {
   try {
     const car = await Car.findOne({
       patent,
-    }).populate("owner", "name lastName")
+    })
+      .populate("owner", "name lastName")
       .populate("address", "street number district");
-    
+
     if (!car) {
-      // throw new Error("Car not found");
-      new Errors.NotFound('Car not found');
+      throw new createError(404, "Car not found");
     }
     return car;
   } catch (error) {
@@ -49,9 +46,11 @@ export const createCar = async (car) => {
   try {
     const { patent, address, user } = car;
     const existentCar = await Car.findOne({ patent });
+
     if (existentCar) {
-      throw new Error(`Car ${patent} already exists`);
+      throw new createError(409, `Car ${patent} already exists`);
     }
+
     const newCar = new Car({
       ...car,
       address,
@@ -81,9 +80,11 @@ export const updateCar = async (id, car) => {
 export const deleteCar = async (id) => {
   try {
     const carDB = await Car.findById(id);
+
     if (!carDB) {
-      throw new Error(`Car not found`);
+      throw new createError(404, "Car not found");
     }
+
     const deletedCar = await Car.findByIdAndUpdate(
       id,
       { disabled: !carDB?.disabled },

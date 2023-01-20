@@ -18,15 +18,9 @@ app.use(express.json());
 
 const PORT = process.env.PORT || 3000;
 
-// interceptar la request y ver la url a la que se esta accediendo
-app.use((req, res, next) => {
-  console.log("URL: ", req.url);
-  console.log("HOST: ", req.headers.host);
-
-  console.log("ROOT: ", req.protocol + "://" + req.get("host"));
-  next();
+app.get('/', (req, res) => {
+  res.send('Welcome to server')
 });
-
 
 app.use("/api/users", usersRouter);
 app.use("/api/auth", authRouter);
