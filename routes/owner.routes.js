@@ -2,16 +2,19 @@ import express from "express";
 import { check } from "express-validator";
 import {
   addOwner,
+  asociateCar,
   editOwner,
   getCarsByOwner,
   getOwner,
+  getOwners,
   removeOwner,
 } from "../controllers/index.controller.js";
 import { JWTValidation, Validation } from "../middlewares/index.middleware.js";
 
 const router = express.Router();
 
-router.get("/:id/cars",JWTValidation ,getCarsByOwner);
+router.get("/", JWTValidation, getOwners);
+router.get("/:id/cars", JWTValidation, getCarsByOwner);
 router.get("/:id", JWTValidation, getOwner);
 router.post(
   "/",
@@ -25,6 +28,7 @@ router.post(
   ],
   addOwner
 );
+router.post("/car-associate", JWTValidation, asociateCar);
 router.put(
   "/:id",
   [
@@ -36,6 +40,6 @@ router.put(
   ],
   editOwner
 );
-router.delete("/:id",JWTValidation ,removeOwner);
+router.delete("/:id", JWTValidation, removeOwner);
 
 export default router;
