@@ -1,16 +1,14 @@
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
-import { dbConnection } from "./database/config.js";
-import {
-  addressesRouter,
-  authRouter,
-  carsRouter,
-  ownersRouter,
-  usersRouter,
-  imageRouter,
-} from "./routes/index.routes.js";
-import { errorHandler } from "./utils/index.js";
+import { dbConnection } from "./src/database/config.js";
+import { errorHandler } from "./src/utils/index.js";
+import { usersRouter } from "./src/modules/user/index.js";
+import { authRouter } from "./src/modules/auth/index.js";
+import { carsRouter } from "./src/modules/car/index.js";
+import { ownersRouter } from "./src/modules/owner/index.js";
+import { addressesRouter } from "./src/modules/address/index.js";
+import { imageRouter } from "./src/modules/image-detect/index.js";
 
 const app = express();
 dbConnection();
@@ -19,8 +17,8 @@ app.use(express.json());
 
 const PORT = process.env.PORT || 3000;
 
-app.get('/', (req, res) => {
-  res.send('Welcome to server')
+app.get("/", (req, res) => {
+  res.send("Welcome to server");
 });
 
 app.use("/api/users", usersRouter);
