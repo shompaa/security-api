@@ -5,12 +5,14 @@ import {
   editCar,
   getCar,
   getCarByPatent,
+  getCars,
   removeCar,
 } from "../controllers/index.controller.js";
 import { JWTValidation, Validation } from "../middlewares/index.middleware.js";
 
 const router = express.Router();
 
+router.get("/", JWTValidation, getCars);
 router.get("/:id", JWTValidation, getCar);
 router.get("/patent/:patent", JWTValidation, getCarByPatent);
 router.post(

@@ -1,14 +1,23 @@
 import { Car } from "../models/index.model.js";
-import { findAddressById, updateAddress } from "./address.service.js";
 import createError from "http-errors";
+import { findAddressById } from "./address.service.js";
+
+export const findCars = async () => {
+  try {
+    const cars = await Car.find()
+      .populate("owner", "name lastName")
+      .populate("address", "street number city");
+    return cars;
+  } catch (error) {
+    throw error;
+  }
+};
 
 export const findCarById = async (id) => {
   try {
-    const car = await Car.findById(id)
-      .populate("owner", "name lastName")
-      .populate("address", "street number district");
+    const car = await Car.findById(id).populate("owner", "name lastName");
     if (!car) {
-      throw new createError(404, "Car not found");
+      throw createError(404, "Car not found");
     }
     return car;
   } catch (error) {
@@ -16,27 +25,15 @@ export const findCarById = async (id) => {
   }
 };
 
-export const findCarByPatent = async (patent, user) => {
+export const findCarByPatent = async (patent) => {
   try {
-    const car = await Car.findOne({
-      patent,
-    })
+    const car = await Car.findOne({ patent })
       .populate("owner", "name lastName")
-      .populate("address", "street number district");
-
+      .populate("address", "street number city");
     if (!car) {
-      throw new createError(404, "Car not found");
+      throw createError(404, "Car not found");
     }
     return car;
-  } catch (error) {
-    throw error;
-  }
-};
-
-export const findCarsByAddress = async (addressId) => {
-  try {
-    const cars = await Car.find({ address: addressId });
-    return cars;
   } catch (error) {
     throw error;
   }
@@ -44,23 +41,27 @@ export const findCarsByAddress = async (addressId) => {
 
 export const createCar = async (car) => {
   try {
-    const { patent, address, user } = car;
+    const { patent, address } = car;
     const existentCar = await Car.findOne({ patent });
 
     if (existentCar) {
-      throw new createError(409, `Car ${patent} already exists`);
+      throw createError(409, `Car ${patent} already exists`);
     }
 
     const newCar = new Car({
       ...car,
-      address,
+      address: address,
     });
+
     await newCar.save();
-    const addressDB = await findAddressById(address);
-    await updateAddress(address, {
-      ...addressDB._doc,
-      cars: [...addressDB.cars, newCar._id],
-    });
+
+    const addressDoc = await findAddressById(address);
+    if (!addressDoc) {
+      throw createError(404, `Address not found`);
+    }
+
+    addressDoc.cars.push(newCar);
+    await addressDoc.save();
 
     return newCar;
   } catch (error) {
@@ -71,6 +72,9 @@ export const createCar = async (car) => {
 export const updateCar = async (id, car) => {
   try {
     const updatedCar = await Car.findByIdAndUpdate(id, car, { new: true });
+    if (!updatedCar) {
+      throw createError(404, "Car not found");
+    }
     return updatedCar;
   } catch (error) {
     throw error;

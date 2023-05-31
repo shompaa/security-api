@@ -5,6 +5,7 @@ import {
   approveAddress,
   editAddress,
   getAddress,
+  getAddresses,
   getCarsByAddress,
   getOwnersByAddress,
   getPendingAddresses,
@@ -13,6 +14,7 @@ import {
 import { JWTValidation, Validation } from "../middlewares/index.middleware.js";
 
 const router = express.Router();
+router.get("/", JWTValidation, getAddresses);
 router.get("/pending", JWTValidation, getPendingAddresses);
 router.get("/:id/owners", JWTValidation, getOwnersByAddress);
 router.get("/:id/cars", JWTValidation, getCarsByAddress);
