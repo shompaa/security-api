@@ -1,4 +1,4 @@
-import createError from 'http-errors';
+import createError from "http-errors";
 
 export const errorHandler = (err, _req, res, _next) => {
   const error = { ...err };
@@ -18,13 +18,12 @@ export const errorHandler = (err, _req, res, _next) => {
     error.status = 400;
   }
 
-  if(err instanceof createError.HttpError) {
+  if (err instanceof createError.HttpError) {
     error.status = err.status;
     error.message = err.message;
   }
 
   return res.status(error?.status || 500).json({
-    status: error?.status || 500,
     message: error?.message,
   });
 };
