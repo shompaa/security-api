@@ -36,9 +36,7 @@ export const findUserById = async (id) => {
 
 export const findUserByEmail = async (email) => {
   try {
-    const regex = new RegExp(email, "i");
-    const user = await User.findOne({ email: regex })
-      .populate("address");
+    const user = await User.findOne({ email: email }).populate("address");
     if (!user) {
       throw new Error("User not found");
     }
@@ -69,19 +67,16 @@ export const createUser = async (user) => {
 
 export const editUser = async (id, user) => {
   try {
-    const userDB = await User.findById(id);
-    if (!userDB) {
-      throw new Error("User not found");
-    }
     const { password, role, _id, ...params } = user;
-    if (userDB.email != params.email) {
-      const existentUser = await findUserByEmail(params.email);
-      if (existentUser) {
-        throw new Error(`${params.email} already exists`);
-      }
+    const updatedUser = await User.findOneAndUpdate(
+      { _id: id, email: { $ne: params.email } },
+      params,
+      { new: true }
+    );
+    if (!updatedUser) {
+      throw new Error(`${params.email} already exists or User not found`);
     }
-    const updatedUser = await User.findByIdAndUpdate(id, params, { new: true });
-    return updatedUser || userDB;
+    return updatedUser;
   } catch (error) {
     throw error;
   }
@@ -89,12 +84,12 @@ export const editUser = async (id, user) => {
 
 export const removeUser = async (id) => {
   try {
-    const userDB = await findById(id);
+    const userDB = await User.findById(id);
     if (!userDB) {
       throw new Error("User not found");
     }
     const deletedUser = await User.findByIdAndUpdate(
-      { id },
+      id,
       { disabled: true, deletedAt: Date.now() },
       { new: true }
     );
