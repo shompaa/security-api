@@ -1,16 +1,9 @@
-import path from "path";
-import { fileURLToPath } from "url";
 import { ImageAnnotatorClient } from "@google-cloud/vision";
+import { googleConfig } from "../../utils/helpers/index.helper.js";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-process.env.GOOGLE_APPLICATION_CREDENTIALS = path.resolve(
-  __dirname,
-  "../utils/secret.json"
-);
-
-const client = new ImageAnnotatorClient();
+const client = new ImageAnnotatorClient({
+  credentials: googleConfig,
+});
 const PLATE_REGEX = /([A-Z]{2})\W*([A-Z]{2})\W*(\d{2})/;
 
 export const detectPlate = async (req, res, next) => {
@@ -23,14 +16,12 @@ export const detectPlate = async (req, res, next) => {
     const fullDescription = descriptions.join(" ");
 
     const licensePlate = fullDescription.match(PLATE_REGEX);
-    const plate = licensePlate
-      ? licensePlate.slice(1, 4).join("-")
-      : null;
+    const plate = licensePlate ? licensePlate.slice(1, 4).join("-") : null;
 
     if (!plate) {
       throw new Error("Formato de placa inválido");
     }
-    res.status(200).json({ plate });
+    res.status(200).json({ data: plate });
   } catch (err) {
     console.error(err);
     next(err);
