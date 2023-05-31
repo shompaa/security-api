@@ -3,3 +3,4 @@ export {default as authRouter} from './auth.routes.js';
 export {default as carsRouter} from './car.routes.js';
 export {default as ownersRouter} from './owner.routes.js';
 export {default as addressesRouter} from './address.routes.js';
+export {default as imageRouter} from './image-detect.routes.js';
