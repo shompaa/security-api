@@ -1,23 +1,46 @@
-import { Address } from "../models/index.model.js";
-import { createOwner, editUser, findUserById, updateOwner } from "./index.service.js";
+import { Address, Owner } from "../models/index.model.js";
+import { createOwner, findUserById } from "./index.service.js";
 
-// export const findOwnersByAddress = async (addressId) => {
-//   try {
-//     const owners = await Address.findById(addressId);
-//     return owners;
-//   } catch (error) {
-//     throw error;
-//   }
-// };
+export const findAddresses = async () => {
+  try {
+    const addresses = await Address.find()
+      .populate("proprietary", "name lastName email rut")
+      .populate("owners", "name lastName rut")
+      .populate("cars", "patent brand model color year");
+    return addresses;
+  } catch (error) {
+    throw error;
+  }
+};
 
-// export const findCarsByAddress = async (addressId) => {
-//   try {
-//     const cars = await Address.findById(addressId).populate("cars");
-//     return cars;
-//   } catch (error) {
-//     throw error;
-//   }
-// };
+export const findOwnersByAddress = async (addressId) => {
+  try {
+    const address = await Address.findById(addressId)
+      .populate("owners", "name lastName rut")
+      .populate("cars", "patent brand model color year");
+    if (!address) {
+      throw new Error("Address not found");
+    }
+    return address.owners;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const findCarsByAddress = async (addressId) => {
+  try {
+    const address = await Address.findById(addressId).populate(
+      "cars",
+      "patent brand model color year"
+    );
+    if (!address) {
+      throw new Error("Address not found");
+    }
+    return address.cars;
+  } catch (error) {
+    throw error;
+  }
+};
 
 export const findAddressById = async (id) => {
   try {
@@ -37,21 +60,29 @@ export const findAddressById = async (id) => {
 export const createAddress = async (address) => {
   try {
     const { user, street, number, district } = address;
-    const userDB = await findUserById(user?.id);
     const existentAddress = await Address.findOne({ street, number, district });
+
     if (existentAddress) {
       throw new Error(`Address already exists`);
     }
+    const userDB = await findUserById(user?.id);
+    if (!userDB) {
+      throw new Error(`User not found`);
+    }
+    const newOwner = await createOwner({
+      rut: userDB.rut,
+      lastName: userDB.lastName,
+      name: userDB.name,
+    });
 
-    const owner = await createOwner(userDB);
     const newAddress = new Address({
       ...address,
-      proprietary: userDB?.id,
-      owners: [owner],
+      proprietary: user?.id,
+      owners: [newOwner._id],
     });
+
     await newAddress.save();
-    await editUser(userDB.id, { ...userDB._doc, address: newAddress.id });
-    await updateOwner(owner.id, { ...owner._doc, address: newAddress.id });
+
     return newAddress;
   } catch (error) {
     throw error;
@@ -127,8 +158,7 @@ export const addIntegrantToAddress = async (idAddress, idUser) => {
     if (!userDB) {
       throw new Error(`User not found`);
     }
-    const owner = await createOwner(userDB);
-    addressDB.owners.push(owner);
+    addressDB.owners.push(userDB._id);
     const updatedAddress = await updateAddress(idAddress, addressDB);
     return updatedAddress;
   } catch (error) {
