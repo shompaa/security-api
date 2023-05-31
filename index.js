@@ -8,6 +8,7 @@ import {
   carsRouter,
   ownersRouter,
   usersRouter,
+  imageRouter,
 } from "./routes/index.routes.js";
 import { errorHandler } from "./utils/index.js";
 
@@ -27,6 +28,7 @@ app.use("/api/auth", authRouter);
 app.use("/api/cars", carsRouter);
 app.use("/api/owners", ownersRouter);
 app.use("/api/addresses", addressesRouter);
+app.use("/api/images", imageRouter);
 
 app.use(errorHandler);
 
