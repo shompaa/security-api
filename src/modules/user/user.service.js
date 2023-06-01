@@ -51,8 +51,7 @@ export const createUser = async (user) => {
     const { email, password } = user;
     const existentUser = await User.findOne({ email });
     if (existentUser) {
-      throw new Error(`${email} 
-            `);
+      throw new Error(`${email} already exists`);
     }
 
     const newUser = new User(user);
@@ -68,14 +67,32 @@ export const createUser = async (user) => {
 export const editUser = async (id, user) => {
   try {
     const { password, role, _id, ...params } = user;
-    const updatedUser = await User.findOneAndUpdate(
-      { _id: id, email: { $ne: params.email } },
-      params,
-      { new: true }
-    );
-    if (!updatedUser) {
-      throw new Error(`${params.email} already exists or User not found`);
+
+    const existingUser = await User.findById(id);
+    if (!existingUser) {
+      throw new Error("User not found");
     }
+
+    if (params.email && existingUser.email !== params.email) {
+      const emailExists = await User.findOne({ email: params.email });
+      if (emailExists) {
+        throw new Error("User  already exists");
+      }
+      existingUser.email = params.email;
+    }
+
+    if (params.rut && existingUser.rut !== params.rut) {
+      const rutExists = await User.findOne({ rut: params.rut });
+      if (rutExists) {
+        throw new Error("User already exists");
+      }
+      existingUser.rut = params.rut;
+    }
+
+    existingUser.name = params.name || existingUser.name;
+    existingUser.lastName = params.lastName || existingUser.lastName;
+
+    const updatedUser = await existingUser.save();
     return updatedUser;
   } catch (error) {
     throw error;

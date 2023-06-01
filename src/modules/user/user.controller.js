@@ -18,10 +18,14 @@ export const getUsers = async (req, res) => {
   });
 };
 
-export const getUser = async (req, res) => {
-  const { id } = req.params;
-  const user = await findUserById(id);
-  res.status(200).json({ data: user });
+export const getUser = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const user = await findUserById(id);
+    res.status(200).json({ data: user });
+  } catch (error) {
+    next(error);
+  }
 };
 
 export const addUser = async (req, res, next) => {
@@ -51,7 +55,7 @@ export const deleteUser = async (req, res, next) => {
   try {
     const { id } = req.params;
     const { email } = await removeUser(id);
-    res.status(204).json({
+    res.status(200).json({
       data: email,
     });
   } catch (error) {
