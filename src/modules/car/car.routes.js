@@ -4,7 +4,7 @@ import {
   addCar,
   editCar,
   getCar,
-  getCarByPatent,
+  getCarByPlate,
   getCars,
   removeCar,
 } from "./car.controller.js";
@@ -17,7 +17,7 @@ const router = express.Router();
 
 router.get("/", JWTValidation, getCars);
 router.get("/:id", JWTValidation, getCar);
-router.get("/patent/:patent", JWTValidation, getCarByPatent);
+router.get("/plate/:plate", JWTValidation, getCarByPlate);
 router.post(
   "/",
   [
@@ -25,7 +25,7 @@ router.post(
     check("brand", "Brand is required").not().isEmpty(),
     check("model", "Model is required").not().isEmpty(),
     check("year", "Year is required").not().isEmpty(),
-    check("patent", "Patent is required").not().isEmpty(),
+    check("plate", "Plate is required").not().isEmpty(),
     check("color", "Color is required").not().isEmpty(),
     check("address", "Address is required").isMongoId(),
     Validation,
@@ -39,7 +39,7 @@ router.put(
     check("brand", "Brand is required").not().isEmpty(),
     check("model", "Model is required").not().isEmpty(),
     check("year", "Year is required").not().isEmpty(),
-    check("patent", "Patent is required").not().isEmpty(),
+    check("plate", "Plate is required").not().isEmpty(),
     check("color", "Color is required").not().isEmpty(),
     Validation,
   ],

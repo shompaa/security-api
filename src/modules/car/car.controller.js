@@ -2,7 +2,7 @@ import {
   createCar,
   deleteCar,
   findCarById,
-  findCarByPatent,
+  findCarByPlate,
   findCars,
   updateCar,
 } from "./car.service.js";
@@ -26,11 +26,11 @@ export const getCar = async (req, res, next) => {
   }
 };
 
-export const getCarByPatent = async (req, res, next) => {
+export const getCarByPlate = async (req, res, next) => {
   try {
-    const { patent } = req.params;
+    const { plate } = req.params;
     const { user } = req.body;
-    const car = await findCarByPatent(patent, user);
+    const car = await findCarByPlate(plate, user);
     res.status(200).json({ data: car });
   } catch (e) {
     next(e);

@@ -2,7 +2,7 @@ import { Schema, model } from "mongoose";
 
 /**
  * Attributes:
- * patent: String
+ * plate: String
  * brand: String
  * model: String
  * color: String
@@ -17,7 +17,7 @@ import { Schema, model } from "mongoose";
 
 const carSchema = new Schema(
   {
-    patent: {
+    plate: {
       type: String,
       required: true,
       unique: true,

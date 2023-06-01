@@ -25,9 +25,9 @@ export const findCarById = async (id) => {
   }
 };
 
-export const findCarByPatent = async (patent) => {
+export const findCarByPlate = async (plate) => {
   try {
-    const car = await Car.findOne({ patent })
+    const car = await Car.findOne({ plate })
       .populate("owner", "name lastName")
       .populate("address", "street number city");
     if (!car) {
@@ -41,11 +41,11 @@ export const findCarByPatent = async (patent) => {
 
 export const createCar = async (car) => {
   try {
-    const { patent, address } = car;
-    const existentCar = await Car.findOne({ patent });
+    const { plate, address } = car;
+    const existentCar = await Car.findOne({ plate });
 
     if (existentCar) {
-      throw createError(409, `Car ${patent} already exists`);
+      throw createError(409, `Car ${plate} already exists`);
     }
 
     const newCar = new Car({

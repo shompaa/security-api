@@ -5,7 +5,7 @@ import { findCarById } from "../car/car.service.js";
 export const findOwners = async () => {
   try {
     const owners = await Owner.find()
-      .populate("cars", "patent brand model color year")
+      .populate("cars", "plate brand model color year")
       .populate("address", "street number city");
     return owners;
   } catch (error) {
