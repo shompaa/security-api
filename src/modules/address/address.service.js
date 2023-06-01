@@ -7,7 +7,7 @@ export const findAddresses = async () => {
     const addresses = await Address.find()
       .populate("proprietary", "name lastName email rut")
       .populate("owners", "name lastName rut")
-      .populate("cars", "patent brand model color year");
+      .populate("cars", "plate brand model color year");
     return addresses;
   } catch (error) {
     throw error;
@@ -18,7 +18,7 @@ export const findOwnersByAddress = async (addressId) => {
   try {
     const address = await Address.findById(addressId)
       .populate("owners", "name lastName rut")
-      .populate("cars", "patent brand model color year");
+      .populate("cars", "plate brand model color year");
     if (!address) {
       throw new Error("Address not found");
     }
@@ -32,7 +32,7 @@ export const findCarsByAddress = async (addressId) => {
   try {
     const address = await Address.findById(addressId).populate(
       "cars",
-      "patent brand model color year"
+      "plate brand model color year"
     );
     if (!address) {
       throw new Error("Address not found");
@@ -48,7 +48,7 @@ export const findAddressById = async (id) => {
     const address = await Address.findById(id)
       .populate("proprietary", "name lastName email")
       .populate("owners", "name lastName rut")
-      .populate("cars", "patent brand model color year");
+      .populate("cars", "plate brand model color year");
     if (!address) {
       throw new Error("Address not found");
     }
