@@ -76,7 +76,7 @@ export const editUser = async (id, user) => {
     if (params.email && existingUser.email !== params.email) {
       const emailExists = await User.findOne({ email: params.email });
       if (emailExists) {
-        throw new Error("User  already exists");
+        throw new Error("One of the fields already exists, it cannot be added");
       }
       existingUser.email = params.email;
     }
@@ -84,7 +84,7 @@ export const editUser = async (id, user) => {
     if (params.rut && existingUser.rut !== params.rut) {
       const rutExists = await User.findOne({ rut: params.rut });
       if (rutExists) {
-        throw new Error("User already exists");
+        throw new Error("One of the fields already exists, it cannot be added");
       }
       existingUser.rut = params.rut;
     }
