@@ -4,7 +4,8 @@ export const login = async (req, res, next) => {
   try {
     const resp = await loginService(req?.body);
     res.status(200).json({
-      data: "User logged in successfully",
+      message: "User logged in successfully",
+      data: resp,
     });
   } catch (e) {
     next(e);
