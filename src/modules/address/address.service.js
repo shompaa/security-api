@@ -1,5 +1,8 @@
 import { Address } from "./address.model.js";
-import { createOwner } from "../owner/owner.service.js";
+import {
+  createOwner,
+  createOwnerWithoutAddress,
+} from "../owner/owner.service.js";
 import { findUserById } from "../user/user.service.js";
 
 export const findAddresses = async () => {
@@ -66,11 +69,13 @@ export const createAddress = async (address) => {
     if (existentAddress) {
       throw new Error(`Address already exists`);
     }
+
     const userDB = await findUserById(user?.id);
     if (!userDB) {
       throw new Error(`User not found`);
     }
-    const newOwner = await createOwner({
+
+    const newOwner = await createOwnerWithoutAddress({
       rut: userDB.rut,
       lastName: userDB.lastName,
       name: userDB.name,
@@ -83,6 +88,9 @@ export const createAddress = async (address) => {
     });
 
     await newAddress.save();
+
+    newOwner.address = newAddress.id;
+    await newOwner.save();
 
     return newAddress;
   } catch (error) {

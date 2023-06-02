@@ -106,3 +106,20 @@ export const addCarToOwner = async (ownerId, carId) => {
     throw error;
   }
 };
+
+export const createOwnerWithoutAddress = async (owner) => {
+  try {
+    const { rut, name, lastName } = owner;
+    const existentOwner = await Owner.findOne({ rut });
+    if (existentOwner) {
+      throw new Error(`Owner with ${rut} already exists`);
+    }
+
+    const newOwner = new Owner({ rut, name, lastName });
+    await newOwner.save();
+
+    return newOwner;
+  } catch (error) {
+    throw error;
+  }
+};
