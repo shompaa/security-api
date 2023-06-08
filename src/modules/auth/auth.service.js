@@ -13,7 +13,7 @@ export const loginService = async (params) => {
     const validPassword = bcrypt.compareSync(password, user.password);
 
     if (!validPassword) {
-      throw new createError(400, "Invalid email or password");
+      throw new createError(401, "Invalid email or password");
     }
     const {
       password: _,

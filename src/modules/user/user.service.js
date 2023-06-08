@@ -1,4 +1,5 @@
 import bcrypt from "bcrypt";
+import createHttpError from "http-errors";
 import { User } from "./user.model.js";
 
 export const findUsers = async ({ from, limit, search }) => {
@@ -38,7 +39,7 @@ export const findUserByEmail = async (email) => {
   try {
     const user = await User.findOne({ email: email }).populate("address");
     if (!user) {
-      throw new Error("User not found");
+      throw new createHttpError(404, "User not found");
     }
     return user;
   } catch (error) {
