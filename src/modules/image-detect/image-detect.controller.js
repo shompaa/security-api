@@ -1,4 +1,5 @@
 import { ImageAnnotatorClient } from "@google-cloud/vision";
+import createHttpError from "http-errors";
 import { googleConfig } from "../../utils/helpers/index.helper.js";
 
 const client = new ImageAnnotatorClient({
@@ -16,10 +17,10 @@ export const detectPlate = async (req, res, next) => {
     const fullDescription = descriptions.join(" ");
 
     const licensePlate = fullDescription.match(PLATE_REGEX);
-    const plate = licensePlate ? licensePlate.slice(1, 4).join("-") : null;
+    const plate = licensePlate ? licensePlate.slice(1, 4).join("") : null;
 
     if (!plate) {
-      throw new Error("Formato de placa inválido");
+      throw new createHttpError(404, "Plate not found");
     }
     res.status(200).json({ data: plate });
   } catch (err) {
